@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// #region User
+model User {
+  uid        String      @id @default(uuid())
+  tgId       Int
+  nickname   String?
+  phone      String?
+  firstName  String
+  lastName   String
+  level      Int
+  UserScore  UserScore?
+  UserWallet UserWallet?
+}
+
+model UserScore {
+  uid     String @id @default(uuid())
+  score   Int
+  userUid String @unique
+  user    User   @relation(fields: [userUid], references: [uid])
+}
+
+model UserWallet {
+  uid     String @id @default(uuid())
+  value   Int
+  user    User   @relation(fields: [userUid], references: [uid])
+  userUid String @unique
+}
+
+// #endregion
+
+// #region Facility
+model Facility {
+  uid           String          @id @default(uuid())
+  name          String
+  description   String
+  FacilityImage FacilityImage[]
+}
+
+model FacilityImage {
+  uid         String   @id @default(uuid())
+  name        String
+  data        String
+  facility    Facility @relation(fields: [facilityUid], references: [uid])
+  facilityUid String
+}
+// #endregion
